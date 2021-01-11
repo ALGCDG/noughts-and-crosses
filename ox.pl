@@ -76,4 +76,53 @@ minmax(Turn, State, Value) :-
     findall(X, change(Turn, State, X), Children),
     alternate(Turn,NextTurn),
     maplist(minmax(NextTurn), Children, Values),
-    aggregate(Turn, Values, Value).
+    %aggregate(Turn, Values, Value).
+    sum_list(Values, Value).
+
+% a predicate for getting a human input
+human((Max_visited, Min_visited),(Max_visited,Min_new)) :-
+    write("input action"),
+    read(Player_choice),
+    valid_position(Player_choice),
+    \+ member(Player_choice, Max_visited),
+    \+ member(Player_choice, Min_visited),
+    append([Player_choice],Min_visited,Min_new).
+
+best([], Best, Best).
+best([H|T], empty, Best) :-
+    best([H|T], H, Best).
+best([State| T], TmpBest, Best) :-
+    minmax(max, State, ValueA),
+    minmax(max, TmpBest, ValueB),
+    ValueA < ValueB,
+    best(T, TmpBest, Best).
+best([State| T], TmpBest, Best) :-
+    minmax(max, State, ValueA),
+    minmax(max, TmpBest, ValueB),
+    ValueA >= ValueB,
+    best(T, State, Best).
+
+
+% a predicate which takes a state and finds an action
+bot(State, NState) :-
+    findall(X, change(max, State, X), Possible_actions),
+    best(Possible_actions, empty, NState). 
+play(State) :-
+    goal_state(State),
+    write("the machine wins!").
+play(State) :-
+    fail_state(State),
+    write("the human wins!").
+play(State) :-
+    stail_state(State),
+    write("stailmate!").
+play(State) :-
+    write(State),
+    write("\n"),
+    bot(State,A),
+    write(A),
+    write("\n"),
+    human(A, B),
+    write(B),
+    write("\n"),
+    play(B).
