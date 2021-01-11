@@ -18,6 +18,9 @@ main :-
     send(F, display, new(B9, box(100,100)), point(200,200)),
     send(F, display, new(E, circle(100)), point(200,200)),
     send(F,open),
+    sleep(5),
+    free(E),
+    sleep(5),
     start_state(S),
     play(S),
     free(F),
@@ -30,5 +33,4 @@ main :-
     free(B7),
     free(B8),
     free(B9),
-    free(E),
     halt.
