@@ -1,21 +1,18 @@
 :-consult(ox).
 
-play(State) :-
+play(State, DisplayState, OnHumanWin, OnBotWin, OnStailmate) :-
     goal_state(State),
-    write("the machine wins!").
-play(State) :-
+    call(OnBotWin).
+play(State, DisplayState, OnHumanWin, OnBotWin, OnStailmate) :-
     fail_state(State),
-    write("the human wins!").
-play(State) :-
+    call(OnHumanWin).
+play(State, DisplayState, OnHumanWin, OnBotWin, OnStailmate) :-
     stail_state(State),
-    write("stailmate!").
-play(State) :-
-    write(State),
-    write("\n"),
+    call(OnStailmate).
+play(State, DisplayState, OnHumanWin, OnBotWin, OnStailmate) :-
+    call(DisplayState, State),
     bot(State,A),
-    write(A),
-    write("\n"),
+    call(DisplayState, A),
     human(A, B),
-    write(B),
-    write("\n"),
+    call(DisplayState, B),
     play(B).
